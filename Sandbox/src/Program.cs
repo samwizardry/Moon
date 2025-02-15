@@ -1,2 +1,10 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+namespace Sandbox;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        using var app = new SandboxApplication();
+        app.Run();
+    }
+}

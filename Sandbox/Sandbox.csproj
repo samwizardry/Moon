@@ -1,9 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <AssemblyName>Sandbox</AssemblyName>
     <RootNamespace>Sandbox</RootNamespace>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Moon\Moon.csproj" />
+  </ItemGroup>
 
 </Project>
