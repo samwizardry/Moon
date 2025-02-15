@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>Moon</AssemblyName>
-    <RootNamespace>Moon</RootNamespace>
+    <AssemblyName>Sandbox</AssemblyName>
+    <RootNamespace>Sandbox</RootNamespace>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
