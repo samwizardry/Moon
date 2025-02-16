@@ -12,19 +12,24 @@ class Program
         {
             Title = "Sandbox",
             ClientSize = (800, 600),
-            Vsync = VSyncMode.On
+            Vsync = VSyncMode.Off,
+            WindowState = WindowState.Maximized
         });
 
-        game.PushLayer(new ExampleLayer());
+        //game.PushLayer(new ExampleLayer());
+        game.PushOverlay(new ImGuiLayer());
 
         game.Run();
     }
 
     public class ExampleLayer : Layer
     {
-        public override void OnUpdate()
+        public ExampleLayer()
+            : base("ExampleLayer")
+        { }
+
+        public override void OnUpdate(FrameEventArgs args)
         {
-            base.OnUpdate();
         }
 
         public override bool OnKeyDown(KeyboardKeyEventArgs e)

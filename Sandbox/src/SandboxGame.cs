@@ -1,7 +1,5 @@
 using Moon;
 
-using OpenTK.Windowing.Common;
-
 namespace Sandbox;
 
 
@@ -14,27 +12,5 @@ public class SandboxGame : Game
             ClientSize = (1280, 720)
         })
     {
-    }
-
-    protected override void OnLoad()
-    {
-        base.OnLoad();
-
-
-    }
-
-    protected override void OnUnload()
-    {
-        base.OnUnload();
-    }
-
-    protected override void OnUpdateFrame(FrameEventArgs args)
-    {
-        base.OnUpdateFrame(args);
-    }
-
-    protected override void OnRenderFrame(FrameEventArgs args)
-    {
-        base.OnRenderFrame(args);
     }
 }
