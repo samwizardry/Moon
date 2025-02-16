@@ -1,3 +1,5 @@
+using ImGuiNET;
+
 using Moon;
 
 using OpenTK.Windowing.Common;
@@ -8,16 +10,14 @@ class Program
 {
     static void Main(string[] args)
     {
-        using var game = new Game(new OpenTK.Windowing.Desktop.NativeWindowSettings
+        using var game = new Application(new OpenTK.Windowing.Desktop.NativeWindowSettings
         {
             Title = "Sandbox",
-            ClientSize = (800, 600),
-            Vsync = VSyncMode.Off,
-            WindowState = WindowState.Maximized
+            ClientSize = (1280, 720),
+            Vsync = VSyncMode.Off
         });
 
-        //game.PushLayer(new ExampleLayer());
-        game.PushOverlay(new ImGuiLayer());
+        game.PushLayer(new ExampleLayer());
 
         game.Run();
     }
@@ -28,13 +28,19 @@ class Program
             : base("ExampleLayer")
         { }
 
-        public override void OnUpdate(FrameEventArgs args)
+        public override void OnUpdate()
         {
+        }
+
+        public override void OnImGuiRender()
+        {
+            ImGui.DockSpaceOverViewport();
+            ImGui.ShowDemoWindow();
         }
 
         public override bool OnKeyDown(KeyboardKeyEventArgs e)
         {
-            Log.Information(e.Key.ToString());
+            Log.Information("{name}: {key}", Name, e.Key.ToString());
 
             return false;
         }

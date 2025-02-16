@@ -3,7 +3,7 @@ using Moon;
 namespace Sandbox;
 
 
-public class SandboxGame : Game
+public class SandboxGame : Application
 {
     public SandboxGame()
         : base(new OpenTK.Windowing.Desktop.NativeWindowSettings

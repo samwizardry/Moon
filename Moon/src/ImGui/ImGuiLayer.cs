@@ -14,8 +14,6 @@ namespace Moon;
 // TODO: labelObject gl debug
 public class ImGuiLayer : Layer, IDisposable
 {
-    private Vector2 _scaleFactor = Vector2.One;
-
     private int _vertexArray;
     private int _vertexBuffer;
     private int _vertexBufferSize;
@@ -35,26 +33,9 @@ public class ImGuiLayer : Layer, IDisposable
     {
         int major = GL.GetInteger(GetPName.MajorVersion);
         int minor = GL.GetInteger(GetPName.MinorVersion);
-
         _glVersion = major * 100 + minor * 10;
-
         _KHRDebugAvailable = (major == 4 && minor >= 3) || IsExtensionSupported("KHR_debug");
-
         _compatibilityProfile = (GL.GetInteger((GetPName)All.ContextProfileMask) & (int)All.ContextCompatibilityProfileBit) != 0;
-
-        var context = ImGui.CreateContext();
-        ImGui.SetCurrentContext(context);
-        ImGui.StyleColorsDark();
-
-        var io = ImGui.GetIO();
-
-        io.Fonts.AddFontDefault();
-
-        io.BackendFlags |= ImGuiBackendFlags.HasMouseCursors | ImGuiBackendFlags.HasSetMousePos | ImGuiBackendFlags.RendererHasVtxOffset;
-        io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard | ImGuiConfigFlags.DockingEnable;
-        io.Fonts.Flags |= ImFontAtlasFlags.NoBakedLines;
-
-        CreateDeviceResources();
     }
 
     public void Dispose()
@@ -64,41 +45,82 @@ public class ImGuiLayer : Layer, IDisposable
         GL.DeleteBuffer(_indexBuffer);
         GL.DeleteTexture(_fontTexture);
         GL.DeleteProgram(_shader);
+        ImGui.DestroyContext();
     }
 
-    public override void OnAttach(Game game)
+    public override void OnAttach(Application game)
     {
         base.OnAttach(game);
+
+        var context = ImGui.CreateContext();
+        ImGui.SetCurrentContext(context);
+        ImGuiIOPtr io = ImGui.GetIO();
+
+        io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
+        io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+        //io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
+        io.BackendFlags |= ImGuiBackendFlags.HasMouseCursors;
+        io.BackendFlags |= ImGuiBackendFlags.HasSetMousePos;
+        //io.BackendFlags |= ImGuiBackendFlags.PlatformHasViewports;
+        //io.BackendFlags |= ImGuiBackendFlags.RendererHasViewports;
+        io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
+
+        ImGui.StyleColorsDark();
+        var style = ImGui.GetStyle();
+
+        if ((io.ConfigFlags & ImGuiConfigFlags.ViewportsEnable) == ImGuiConfigFlags.ViewportsEnable)
+        {
+            style.WindowRounding = 0.0f;
+            style.Colors[(int)ImGuiCol.WindowBg].W = 1.0f;
+        }
+
+        CreateDeviceResources();
     }
 
     public override void OnDetach()
     {
         base.OnDetach();
+
+        GL.DeleteVertexArray(_vertexArray);
+        GL.DeleteBuffer(_vertexBuffer);
+        GL.DeleteBuffer(_indexBuffer);
+        GL.DeleteTexture(_fontTexture);
+        GL.DeleteProgram(_shader);
+        ImGui.DestroyContext();
     }
 
-    public override void OnUpdate(FrameEventArgs args)
+    public override void OnImGuiRender()
     {
-        var io = ImGui.GetIO();
+    }
+
+    public void Begin()
+    {
+        ImGuiIOPtr io = ImGui.GetIO();
         var clientSize = _game!.ClientSize;
-        io.DisplaySize = new Vector2(clientSize.X / _scaleFactor.X, clientSize.Y / _scaleFactor.Y);
-        io.DisplayFramebufferScale = _scaleFactor;
+        io.DisplaySize = new Vector2(clientSize.X, clientSize.Y);
         io.DeltaTime = (float)_game.UpdateTime;
+
+        ImGui.NewFrame();
     }
 
-    public override void OnRender(FrameEventArgs args)
+    public void End()
     {
-        ImGui.NewFrame();
-
-        ImGui.DockSpaceOverViewport();
-        ImGui.ShowDemoWindow();
-
         ImGui.Render();
         RenderImDrawData(ImGui.GetDrawData());
+
+        // TODO: viewports not working
+        //unsafe
+        //{
+        //    var context = GLFW.GetCurrentContext();
+        //    ImGui.UpdatePlatformWindows();
+        //    ImGui.RenderPlatformWindowsDefault();
+        //    GLFW.MakeContextCurrent(context);
+        //}
 
         CheckGLError("End of frame");
     }
 
-    #region Input events
+    #region Input Events
 
     public override bool OnMouseDown(MouseButtonEventArgs e)
     {
@@ -176,7 +198,6 @@ public class ImGuiLayer : Layer, IDisposable
 
     #endregion
 
-    #region ImGui specific
 
     private void RenderImDrawData(ImDrawDataPtr drawData)
     {
@@ -482,7 +503,6 @@ public class ImGuiLayer : Layer, IDisposable
         _ => ImGuiKey.None
     };
 
-    #endregion
 
     #region Initialization
 
@@ -643,12 +663,10 @@ public class ImGuiLayer : Layer, IDisposable
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
 
-        // Restore state
         GL.BindTexture(TextureTarget.Texture2D, prevTexture2D);
         GL.ActiveTexture((TextureUnit)prevActiveTexture);
 
-        io.Fonts.SetTexID((IntPtr)_fontTexture);
-
+        io.Fonts.SetTexID(_fontTexture);
         io.Fonts.ClearTexData();
     }
 

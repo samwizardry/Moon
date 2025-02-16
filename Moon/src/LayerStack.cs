@@ -3,13 +3,13 @@ namespace Moon;
 public class LayerStack
 {
     private readonly List<Layer> _layers = new List<Layer>();
-    private int _layerInsert = 0;
+    private int _layerInsertIndex = 0;
 
     public IReadOnlyList<Layer> Layers => _layers;
 
     public void PushLayer(Layer layer)
     {
-        _layers.Insert(_layerInsert++, layer);
+        _layers.Insert(_layerInsertIndex++, layer);
     }
 
     public void PushOverlay(Layer overlay)
@@ -21,7 +21,7 @@ public class LayerStack
     {
         if (_layers.Remove(layer))
         {
-            _layerInsert--;
+            _layerInsertIndex--;
         }
     }
 

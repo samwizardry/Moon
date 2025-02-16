@@ -4,16 +4,16 @@ namespace Moon;
 
 public abstract class Layer
 {
-    protected Game? _game;
+    protected Application? _game;
 
-    public string DebugName { get; init; }
+    public string Name { get; init; }
 
     protected Layer(string name)
     {
-        DebugName = name;
+        Name = name;
     }
 
-    public virtual void OnAttach(Game game)
+    public virtual void OnAttach(Application game)
     {
         _game = game;
     }
@@ -23,13 +23,18 @@ public abstract class Layer
         _game = null;
     }
 
-    public virtual void OnUpdate(FrameEventArgs args) { }
+    public virtual void OnUpdate() { }
 
-    public virtual void OnRender(FrameEventArgs args) { }
+    public virtual void OnRender() { }
 
+    public virtual void OnImGuiRender() { }
+
+    #region Events
     public virtual void OnResize(ResizeEventArgs e) { }
 
-    #region Input events
+    #endregion
+
+    #region Input Events
 
     public virtual bool OnMouseDown(MouseButtonEventArgs e) => false;
 
