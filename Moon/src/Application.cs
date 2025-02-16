@@ -2,14 +2,52 @@ using OpenTK.Windowing.Desktop;
 
 namespace Moon;
 
-public class Application : GameWindow
+public abstract class Application : IDisposable
 {
-    public Application(int width, int height, string title = "Moon")
-        : base(GameWindowSettings.Default,
-            new NativeWindowSettings
-            {
-                Title = title,
-                ClientSize = (width, height)
-            })
-    { }
+    private bool _disposed;
+
+    public Application()
+    {
+    }
+
+    ~Application()
+    {
+        Dispose(false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+            return;
+
+        if (disposing)
+        {
+            // Освобождаем управляемые ресурсы
+        }
+
+        // Освобождаем неуправляемые ресурсы
+
+        _disposed = true;
+    }
+
+    protected void CheckDisposed()
+    {
+        if (_disposed)
+        {
+            throw new ObjectDisposedException(nameof(Application));
+        }
+    }
+
+    public virtual void Run()
+    {
+        CheckDisposed();
+
+
+    }
 }
